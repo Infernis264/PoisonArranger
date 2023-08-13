@@ -31,9 +31,9 @@
 	
 </tbody></table>
 <span>
-	next up!
+	Next up!
 	<div id="next"></div>
-	<span>Score: <span id="score"></span></span>
+	<h3>Score: <h2 id="score"></h2></h3>
 </span>
 <audio src="./img/au.wav" muted></audio>
 <script>
@@ -85,7 +85,7 @@ document.addEventListener("click", e => {
 
 		document.getElementById("next").setAttribute("style", "background-image: "+`url("./img/${poisons[nextup]}");`);
 
-		document.getElementById("score").textContent = score;
+		document.getElementById("score").textContent = score.toLocaleString("en-us");
 
 		if (boardIsFull()) {
 			alert("aw jeez");
@@ -171,7 +171,7 @@ function updateBoard(row, col, multiplier) {
 		for (let i = startRow; i <= endRow; i++) {
 			grid[i][col] = 0;
 		}
-		score += (matched ? 5 : 1) * (matchCell * (1200 * ((((matchCount - 3) || 1) * 2) ** 3))) * multiplier;
+		score += (matched ? 5 : 1) * (matchCell * (1200 * (((matchCount - 3) || 1) * 2))) * multiplier;
 		matched = true;
 	}
 	if (matched) {
