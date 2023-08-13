@@ -27,112 +27,73 @@
 </style>
 </head>
 <body>
-<h1>poison arranger!!</h1><br/>
-<table><tbody>
-	<tr data-row="0">
-		<td data-col="0"></td>
-		<td data-col="1"></td>
-		<td data-col="2"></td>
-		<td data-col="3"></td>
-		<td data-col="4"></td>
-	</tr>
-	<tr data-row="1">
-		<td data-col="0"></td>
-		<td data-col="1"></td>
-		<td data-col="2"></td>
-		<td data-col="3"></td>
-		<td data-col="4"></td>
-	</tr>
-	<tr data-row="2">
-		<td data-col="0"></td>
-		<td data-col="1"></td>
-		<td data-col="2"></td>
-		<td data-col="3"></td>
-		<td data-col="4"></td>
-	</tr>
-	<tr data-row="3">
-		<td data-col="0"></td>
-		<td data-col="1"></td>
-		<td data-col="2"></td>
-		<td data-col="3"></td>
-		<td data-col="4"></td>
-	</tr>
-	<tr data-row="4">
-		<td data-col="0"></td>
-		<td data-col="1"></td>
-		<td data-col="2"></td>
-		<td data-col="3"></td>
-		<td data-col="4"></td>
-	</tr>
+<table><tbody id="board">
+	
 </tbody></table>
 <span>
 	next up!
 	<div id="next"></div>
 	<span>Score: <span id="score"></span></span>
 </span>
+<audio src="./img/au.wav" muted></audio>
 <script>
-
-function weightedArraySelect(arr, numItems) {
-    const weights = Array.from({ length: arr.length }, (_, index) => 1 / (index + 1)); // Inverse 1/x shape weights
-    const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
-    const selectedItems = [];
-
-    for (let i = 0; i < numItems; i++) {
-        let randomValue = Math.random() * totalWeight;
-        for (let j = 0; j < arr.length; j++) {
-            randomValue -= weights[j];
-            if (randomValue <= 0) {
-                selectedItems.push(arr[j]);
-                break;
-            }
-        }
-    }
-
-    return selectedItems;
-}
-const poisons = ["", "wut.png", "asmr.png", "telepack.png", "crust.png", "long.png", "pog.png", "seemsgood.png", "notlikethis.png", "squish.png", "poisonmec.png", "auauaua.png"]
-const weights = [ 40, 18, 14, 7, 5, 5, 4, 3, 2, 1, 1 ];
-
-const totalRate = weights.reduce((sum, rate) => sum + rate, 0);
 
 // Generate a weighted random index
 function getRandomWeightedIndex() {
-  const randomValue = Math.random() * totalRate;
-  let sum = 0;
-  for (let i = 0; i < weights.length; i++) {
-    sum += weights[i];
-    if (randomValue <= sum) {
-      return i;
-    }
-  }
+	const randomValue = Math.random() * totalRate;
+	let sum = 0;
+	for (let i = 0; i < weights.length; i++) {
+		sum += weights[i];
+		if (randomValue <= sum) {
+			return i;
+		}
+	}
 }
 
+const BOARD_LEN = 6;
+const poisons = ["", "wut.png", "asmr.png", "telepack.png", "crust.png", "long.png", "pog.png", "seemsgood.png", "notlikethis.png", "squish.png", "poisonmec.png", "auauaua.png", "final.png"]
+const weights = [ 40, 20, 10, 5, 3, 2, 2, 2, 1, 1, 1 ];
+const totalRate = weights.reduce((sum, rate) => sum + rate, 0);
 
 let score = 0;
+let gameOver = false;
 
-let grid = [...Array(5)].map(e => (new Array(5)).fill(0));
-let nextup = 1+getRandomWeightedIndex();//Math.floor(Math.random() * (poisons.length - 1)) + 1;
+let grid = [...Array(BOARD_LEN)].map(e => (new Array(BOARD_LEN)).fill(0));
+let nextup = 1 + getRandomWeightedIndex();
+
 document.getElementById("next").setAttribute("style", "background-image: "+`url("./img/${poisons[nextup]}");`);
 
 document.addEventListener("click", e => {
+	if (gameOver) return;
 	if (e?.target?.tagName?.toLowerCase() === "td") {
 		let [row, col] = [e.target.parentElement.dataset.row, e.target.dataset.col];
 
 		if (grid[row][col] !== 0) return;
 
 		grid[row][col] = nextup;
-
-		updateBoard(row, col);
+		
+		let stillUpdating = true;
+		let multiplier = 1;
+		while (stillUpdating) {
+			stillUpdating = updateBoard(row, col, multiplier);
+			multiplier *= 2;
+		}
 
 		boardToImg();
 
-		nextup = 1+getRandomWeightedIndex();//Math.floor(Math.random() * (poisons.length - 1)) + 1;
+		nextup = 1 + getRandomWeightedIndex();
 
 		document.getElementById("next").setAttribute("style", "background-image: "+`url("./img/${poisons[nextup]}");`);
 
 		document.getElementById("score").textContent = score;
+
+		if (boardIsFull()) {
+			alert("aw jeez");
+			gameOver = true;
+		}		
 	}
 });
+
 function boardToImg() {
 	let tdeez = Array.from(document.querySelectorAll("td"));
 	for (let td of tdeez) {
@@ -147,12 +108,27 @@ function boardToImg() {
 	}
 }
 
-function updateBoard(row, col) {
+function generateBoard(boardSize) {
+	let root = document.getElementById("board");
+	for (let i = 0; i < boardSize; i++) {
+		let tr = document.createElement("tr");
+		tr.setAttribute("data-row", i);
+		for (let j = 0; j < boardSize; j++) {
+			let td = document.createElement("td");
+			td.setAttribute("data-col", j);
+			tr.appendChild(td);
+		}
+		root.appendChild(tr);
+	}
+}
+
+function updateBoard(row, col, multiplier) {
 	let startCol = parseInt(col);
 	let endCol = parseInt(col);
 	let startRow = parseInt(row);
 	let endRow = parseInt(row);
 	let matchCell = grid[row][col];
+	let matched = false;
 
 	while (startCol > 0) {
 		if (grid[row][startCol - 1] === matchCell) {
@@ -173,9 +149,8 @@ function updateBoard(row, col) {
 		for (let i = startCol; i <= endCol; i++) {
 			grid[row][i] = 0;
 		}
-		grid[row][col] = matchCell + 1;
-		score+=matchCount*400;
-		return;
+		score += (matchCell * (1200 * ((((matchCount - 3) || 1) * 2) ** 3))) * multiplier;
+		matched = true;
 	}
 	while (startRow > 0) {
 		if (grid[startRow - 1][col] === matchCell) {
@@ -196,12 +171,29 @@ function updateBoard(row, col) {
 		for (let i = startRow; i <= endRow; i++) {
 			grid[i][col] = 0;
 		}
-		grid[row][col] = matchCell + 1;
-		score+=matchCount*400;
-		return;
+		score += (matched ? 5 : 1) * (matchCell * (1200 * ((((matchCount - 3) || 1) * 2) ** 3))) * multiplier;
+		matched = true;
 	}
+	if (matched) {
+		if (matchCell < poisons.length - 1) {
+			grid[row][col] = matchCell + 1;
+		} else {
+			grid[row][col] = matchCell;
+		}
+		if (matchCell == poisons.length - 2) {
+			let audio = document.querySelector("audio");
+			audio.muted = false;
+			audio.play();
+		}
+	}
+	return matched;
 }
 
+function boardIsFull() {
+	return !grid.reduce((a, b) => a || b.includes(0), false);
+}
+
+generateBoard(BOARD_LEN);
 </script>
 </body>
 </html>
