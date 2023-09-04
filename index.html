@@ -12,7 +12,7 @@
 		height: 100px;
 		border: 1px solid black;
 	}
-	#next {
+	#next, .thing {
 		width: 100px;
 		height: 100px;
 	}
@@ -23,6 +23,10 @@
 	body {
 		display: flex;
 		flex-direction: row;
+	}
+	.scorder {
+		position: fixed;
+		width: 100%;
 	}
 </style>
 </head>
@@ -35,6 +39,9 @@
 	<div id="next"></div>
 	<h3>Score: <h2 id="score"></h2></h3>
 </span>
+<table class="scorder"> 
+<tbody><tr></tr></tbody>
+</table>
 <audio src="./img/au.wav" muted></audio>
 <script>
 
@@ -194,6 +201,21 @@ function boardIsFull() {
 }
 
 generateBoard(BOARD_LEN);
+(function(){
+	let order = document.querySelector(".scorder > tbody > tr");
+	for (let x of poisons.slice(1)) {
+		let newImg = document.createElement("td");
+		newImg.setAttribute("style", `background-image: url("./img/${x});"`;
+		newImg.classList.append("thing");
+		order.appendChild(newImg);
+		if (poisons.indexOf(x) !== poisons.length - 2) {
+			let n = document.createElement("td");
+			n.textContent = "->";
+			order.append(n);
+		}
+	}
+})();
+
 </script>
 </body>
 </html>
