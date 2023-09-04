@@ -171,7 +171,7 @@ function updateBoard(row, col, multiplier) {
 		for (let i = startRow; i <= endRow; i++) {
 			grid[i][col] = 0;
 		}
-		score += (matched ? 5 : 1) * (matchCell * (1200 * (((matchCount - 3) || 1) * 2))) * multiplier;
+		score += (matchCell * (1200 * ((((matchCount - 3) || 1) * 2) ** 3))) * multiplier;
 		matched = true;
 	}
 	if (matched) {
