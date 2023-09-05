@@ -7,7 +7,7 @@
 	html, body {
 		overflow: hidden;
 	}
-	#board > td {
+	#board  td {
 		width: 100px;
 		height: 100px;
 		border: 1px solid black;
@@ -209,9 +209,9 @@ generateBoard(BOARD_LEN);
 		newImg.setAttribute("style", `background-image: url("./img/${x}");`);
 		newImg.classList.add("thing");
 		order.appendChild(newImg);
-		if (poisons.indexOf(x) !== poisons.length - 2) {
+		if (poisons.indexOf(x) !== poisons.length - 1) {
 			let n = document.createElement("td");
-			n.textContent = "->";
+			n.textContent = "→";
 			order.append(n);
 		}
 	}
