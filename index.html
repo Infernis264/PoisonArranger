@@ -206,7 +206,7 @@ generateBoard(BOARD_LEN);
 	for (let x of poisons.slice(1)) {
 		let newImg = document.createElement("td");
 		newImg.setAttribute("style", `background-image: url("./img/${x});"`);
-		newImg.classList.append("thing");
+		newImg.classList.add("thing");
 		order.appendChild(newImg);
 		if (poisons.indexOf(x) !== poisons.length - 2) {
 			let n = document.createElement("td");
