@@ -103,7 +103,7 @@ document.addEventListener("click", e => {
 });
 
 function boardToImg() {
-	let tdeez = Array.from(document.querySelectorAll("td"));
+	let tdeez = Array.from(document.querySelectorAll("#board td"));
 	for (let td of tdeez) {
 		let row = td.parentElement.dataset.row;
 		let col = td.dataset.col;
