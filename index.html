@@ -60,7 +60,7 @@ function getRandomWeightedIndex() {
 
 const BOARD_LEN = 6;
 const poisons = ["", "wut.png", "asmr.png", "telepack.png", "crust.png", "long.png", "pog.png", "seemsgood.png", "notlikethis.png", "squish.png", "poisonmec.png", "auauaua.png", "final.png"]
-const weights = [ 40, 20, 10, 5, 3, 2, 2, 2, 1, 1, 1 ];
+const weights = [ 80, 30, 10, 5, 3, 2, 2, 2, 1, 1, 1 ];
 const totalRate = weights.reduce((sum, rate) => sum + rate, 0);
 
 let score = 0;
@@ -84,7 +84,7 @@ document.addEventListener("click", e => {
 		let multiplier = 1;
 		while (stillUpdating) {
 			stillUpdating = updateBoard(row, col, multiplier);
-			multiplier *= 2;
+			multiplier *= 3;
 		}
 
 		boardToImg();
